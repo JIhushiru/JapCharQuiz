@@ -16,6 +16,8 @@ export default function Home() {
                     <button onClick={() => navigate("/quiz/both")}>Both</button>
                 </div>
             </div>
+
+            <p className="footer-note">Type the romaji for each character shown</p>
         </div>
     );
 }
