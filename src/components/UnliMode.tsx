@@ -1,18 +1,29 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import hiraganaArray from "../dictionary/hiragana";
 import katakanaArray from "../dictionary/katakana";
 import "../styles/UnliMode.css";
 
+function getHighScore(charset: string): number {
+    const saved = localStorage.getItem(`highscore-${charset}`);
+    return saved ? parseInt(saved, 10) : 0;
+}
+
+function getBestStreak(charset: string): number {
+    const saved = localStorage.getItem(`beststreak-${charset}`);
+    return saved ? parseInt(saved, 10) : 0;
+}
+
 export default function UnliMode() {
     const { charset } = useParams<{ charset: string }>();
     const navigate = useNavigate();
+    const mode = charset || "hiragana";
 
     const kanaPool = useMemo(() => {
-        if (charset === "katakana") return katakanaArray;
-        if (charset === "both") return [...hiraganaArray, ...katakanaArray];
+        if (mode === "katakana") return katakanaArray;
+        if (mode === "both") return [...hiraganaArray, ...katakanaArray];
         return hiraganaArray;
-    }, [charset]);
+    }, [mode]);
 
     const getRandomKana = () => {
         return kanaPool[Math.floor(Math.random() * kanaPool.length)];
@@ -25,7 +36,21 @@ export default function UnliMode() {
     const [score, setScore] = useState(0);
     const [totalAttempts, setTotalAttempts] = useState(0);
     const [streak, setStreak] = useState(0);
-    const [bestStreak, setBestStreak] = useState(0);
+    const [bestStreak, setBestStreak] = useState(() => getBestStreak(mode));
+    const [highScore, setHighScore] = useState(() => getHighScore(mode));
+
+    useEffect(() => {
+        if (score > highScore) {
+            setHighScore(score);
+            localStorage.setItem(`highscore-${mode}`, score.toString());
+        }
+    }, [score, highScore, mode]);
+
+    useEffect(() => {
+        if (bestStreak > getBestStreak(mode)) {
+            localStorage.setItem(`beststreak-${mode}`, bestStreak.toString());
+        }
+    }, [bestStreak, mode]);
 
     const handleCheck = () => {
         if (!userGuess.trim()) return;
@@ -51,6 +76,7 @@ export default function UnliMode() {
         setAnswer("");
         setMessage("");
         setUserGuess("");
+        setStreak(0);
         setCurrentKana(getRandomKana());
     };
 
@@ -58,8 +84,8 @@ export default function UnliMode() {
         setAnswer(currentKana.romaji);
     };
 
-    const charsetLabel = charset === "both" ? "Hiragana & Katakana"
-        : charset === "katakana" ? "Katakana" : "Hiragana";
+    const charsetLabel = mode === "both" ? "Hiragana & Katakana"
+        : mode === "katakana" ? "Katakana" : "Hiragana";
 
     const accuracy = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
 
@@ -68,9 +94,8 @@ export default function UnliMode() {
             <h2>{charsetLabel} Quiz</h2>
 
             <div className="stats">
-                <span>Score: {score}</span>
-                <span>Streak: {streak}</span>
-                <span>Best: {bestStreak}</span>
+                <span>Score: {score} {highScore > 0 && <small>(Best: {highScore})</small>}</span>
+                <span>Streak: {streak} {bestStreak > 0 && <small>(Best: {bestStreak})</small>}</span>
                 <span>Accuracy: {accuracy}%</span>
             </div>
 
