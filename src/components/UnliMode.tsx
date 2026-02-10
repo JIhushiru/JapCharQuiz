@@ -43,6 +43,16 @@ export default function UnliMode() {
     const [revealed, setRevealed] = useState(false);
 
     useEffect(() => {
+        if (isCorrect !== null) {
+            const timer = setTimeout(() => {
+                setIsCorrect(null);
+                setMessage("");
+            }, 800);
+            return () => clearTimeout(timer);
+        }
+    }, [isCorrect]);
+
+    useEffect(() => {
         if (score > highScore) {
             setHighScore(score);
             localStorage.setItem(`highscore-${mode}`, score.toString());
