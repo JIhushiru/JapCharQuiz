@@ -7,11 +7,20 @@
     max-width: 500px;
 }
 
-.currentKana {
+.kana-display {
     font-size: 6rem;
     line-height: 1.2;
     margin: 1rem 0;
     user-select: none;
+    transition: color 0.2s ease;
+}
+
+.flash-correct {
+    color: #4ade80;
+}
+
+.flash-wrong {
+    color: #f87171;
 }
 
 .stats {
@@ -19,14 +28,35 @@
     gap: 1.5rem;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 0.8rem 1.5rem;
+    padding: 1rem 1.5rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    font-size: 0.95rem;
+    border-radius: 12px;
+    width: 100%;
 }
 
-.stats span {
-    color: rgba(255, 255, 255, 0.7);
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #e94560;
+}
+
+.stat-best {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .guess {
@@ -45,11 +75,13 @@
 .correct {
     color: #4ade80;
     font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .wrong {
     color: #f87171;
     font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .answer-reveal {
@@ -57,13 +89,20 @@
     font-size: 1.1rem;
 }
 
-.back-btn {
-    margin-top: 2rem;
-    opacity: 0.7;
-    font-size: 0.9rem;
+.quiz-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
-.back-btn:hover {
+.back-btn,
+.reset-btn {
+    opacity: 0.6;
+    font-size: 0.85rem;
+}
+
+.back-btn:hover,
+.reset-btn:hover {
     opacity: 1;
 }
 
@@ -72,8 +111,20 @@
         background: rgba(0, 0, 0, 0.04);
     }
 
-    .stats span {
-        color: rgba(0, 0, 0, 0.6);
+    .stat-label {
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-best {
+        color: rgba(0, 0, 0, 0.35);
+    }
+
+    .flash-correct {
+        color: #16a34a;
+    }
+
+    .flash-wrong {
+        color: #dc2626;
     }
 
     .correct {
@@ -86,5 +137,26 @@
 
     .answer-reveal {
         color: #d97706;
+    }
+}
+
+@media (max-width: 480px) {
+    .kana-display {
+        font-size: 4rem;
+    }
+
+    .stats {
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+    }
+
+    .guess {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .guess input {
+        width: 100%;
+        max-width: 250px;
     }
 }

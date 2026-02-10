@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import hiraganaArray from "../dictionary/hiragana";
 import katakanaArray from "../dictionary/katakana";
 import "../styles/UnliMode.css";
@@ -17,6 +17,7 @@ function getBestStreak(charset: string): number {
 export default function UnliMode() {
     const { charset } = useParams<{ charset: string }>();
     const navigate = useNavigate();
+    const inputRef = useRef<HTMLInputElement>(null);
     const mode = charset || "hiragana";
 
     const kanaPool = useMemo(() => {
@@ -38,6 +39,7 @@ export default function UnliMode() {
     const [streak, setStreak] = useState(0);
     const [bestStreak, setBestStreak] = useState(() => getBestStreak(mode));
     const [highScore, setHighScore] = useState(() => getHighScore(mode));
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
     useEffect(() => {
         if (score > highScore) {
@@ -59,6 +61,7 @@ export default function UnliMode() {
 
         if (userGuess.trim().toLowerCase() === currentKana.romaji) {
             setMessage("Correct!");
+            setIsCorrect(true);
             setScore(prev => prev + 1);
             const newStreak = streak + 1;
             setStreak(newStreak);
@@ -68,20 +71,36 @@ export default function UnliMode() {
             setCurrentKana(getRandomKana());
         } else {
             setMessage("Try again!");
+            setIsCorrect(false);
             setStreak(0);
         }
+        inputRef.current?.focus();
     };
 
     const skipKana = () => {
         setAnswer("");
         setMessage("");
         setUserGuess("");
+        setIsCorrect(null);
         setStreak(0);
         setCurrentKana(getRandomKana());
+        inputRef.current?.focus();
     };
 
     const showAnswer = () => {
         setAnswer(currentKana.romaji);
+    };
+
+    const handleReset = () => {
+        setScore(0);
+        setTotalAttempts(0);
+        setStreak(0);
+        setMessage("");
+        setAnswer("");
+        setUserGuess("");
+        setIsCorrect(null);
+        setCurrentKana(getRandomKana());
+        inputRef.current?.focus();
     };
 
     const charsetLabel = mode === "both" ? "Hiragana & Katakana"
@@ -94,15 +113,29 @@ export default function UnliMode() {
             <h2>{charsetLabel} Quiz</h2>
 
             <div className="stats">
-                <span>Score: {score} {highScore > 0 && <small>(Best: {highScore})</small>}</span>
-                <span>Streak: {streak} {bestStreak > 0 && <small>(Best: {bestStreak})</small>}</span>
-                <span>Accuracy: {accuracy}%</span>
+                <div className="stat-item">
+                    <span className="stat-label">Score</span>
+                    <span className="stat-value">{score}</span>
+                    {highScore > 0 && <span className="stat-best">Best: {highScore}</span>}
+                </div>
+                <div className="stat-item">
+                    <span className="stat-label">Streak</span>
+                    <span className="stat-value">{streak}</span>
+                    {bestStreak > 0 && <span className="stat-best">Best: {bestStreak}</span>}
+                </div>
+                <div className="stat-item">
+                    <span className="stat-label">Accuracy</span>
+                    <span className="stat-value">{accuracy}%</span>
+                </div>
             </div>
 
-            <div className="currentKana">{currentKana.kana}</div>
+            <div className={`kana-display ${isCorrect === true ? "flash-correct" : isCorrect === false ? "flash-wrong" : ""}`}>
+                {currentKana.kana}
+            </div>
 
             <div className="guess">
                 <input
+                    ref={inputRef}
                     value={userGuess}
                     onChange={(e) => setUserGuess(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleCheck()}
@@ -114,10 +147,13 @@ export default function UnliMode() {
                 <button onClick={skipKana}>Skip</button>
             </div>
 
-            <p className={message === "Correct!" ? "correct" : "wrong"}>{message}</p>
+            {message && <p className={isCorrect ? "correct" : "wrong"}>{message}</p>}
             {answer && <p className="answer-reveal">Answer: {answer}</p>}
 
-            <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+            <div className="quiz-actions">
+                <button className="reset-btn" onClick={handleReset}>Reset Score</button>
+                <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+            </div>
         </div>
     );
 }
