@@ -40,6 +40,7 @@ export default function UnliMode() {
     const [bestStreak, setBestStreak] = useState(() => getBestStreak(mode));
     const [highScore, setHighScore] = useState(() => getHighScore(mode));
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [revealed, setRevealed] = useState(false);
 
     useEffect(() => {
         if (score > highScore) {
@@ -60,14 +61,19 @@ export default function UnliMode() {
         setTotalAttempts(prev => prev + 1);
 
         if (userGuess.trim().toLowerCase() === currentKana.romaji) {
-            setMessage("Correct!");
             setIsCorrect(true);
-            setScore(prev => prev + 1);
-            const newStreak = streak + 1;
-            setStreak(newStreak);
-            if (newStreak > bestStreak) setBestStreak(newStreak);
+            if (revealed) {
+                setMessage("Correct, but answer was revealed");
+            } else {
+                setMessage("Correct!");
+                setScore(prev => prev + 1);
+                const newStreak = streak + 1;
+                setStreak(newStreak);
+                if (newStreak > bestStreak) setBestStreak(newStreak);
+            }
             setUserGuess("");
             setAnswer("");
+            setRevealed(false);
             setCurrentKana(getRandomKana());
         } else {
             setMessage("Try again!");
@@ -82,6 +88,7 @@ export default function UnliMode() {
         setMessage("");
         setUserGuess("");
         setIsCorrect(null);
+        setRevealed(false);
         setStreak(0);
         setCurrentKana(getRandomKana());
         inputRef.current?.focus();
@@ -89,6 +96,8 @@ export default function UnliMode() {
 
     const showAnswer = () => {
         setAnswer(currentKana.romaji);
+        setRevealed(true);
+        setStreak(0);
     };
 
     const handleReset = () => {
@@ -99,6 +108,7 @@ export default function UnliMode() {
         setAnswer("");
         setUserGuess("");
         setIsCorrect(null);
+        setRevealed(false);
         setCurrentKana(getRandomKana());
         inputRef.current?.focus();
     };
@@ -137,7 +147,7 @@ export default function UnliMode() {
                 <input
                     ref={inputRef}
                     value={userGuess}
-                    onChange={(e) => setUserGuess(e.target.value)}
+                    onChange={(e) => { setUserGuess(e.target.value); setMessage(""); setIsCorrect(null); }}
                     onKeyDown={(e) => e.key === "Enter" && handleCheck()}
                     placeholder="Type romaji..."
                     autoFocus
