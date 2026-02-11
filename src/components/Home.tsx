@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CharChart from "./CharChart";
 
 type Mode = "normal" | "timed" | "1v1";
 
 export default function Home() {
     const navigate = useNavigate();
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
+    const [showChart, setShowChart] = useState(false);
 
     const handleCharset = (charset: string) => {
         if (selectedMode === "timed") {
@@ -72,7 +74,19 @@ export default function Home() {
                 </div>
             )}
 
-            <p className="mt-12 text-xs text-white/25 light:text-black/25">Type the romaji for each character shown</p>
+            <button
+                className="mt-10 text-sm text-white/40 border-white/15 bg-white/3
+                           hover:text-white/70 hover:border-white/30
+                           light:text-black/40 light:border-black/10 light:bg-black/2
+                           light:hover:text-black/60 light:hover:border-black/20"
+                onClick={() => setShowChart(true)}
+            >
+                View Character Chart
+            </button>
+
+            <p className="mt-4 text-xs text-white/25 light:text-black/25">Type the romaji for each character shown</p>
+
+            {showChart && <CharChart onClose={() => setShowChart(false)} />}
         </div>
     );
 }
