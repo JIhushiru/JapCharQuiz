@@ -2,14 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 
-type Mode = "normal" | "timed";
+type Mode = "normal" | "timed" | "1v1";
 
 export default function Home() {
     const navigate = useNavigate();
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
     const handleCharset = (charset: string) => {
-        if (selectedMode === "timed") {
+        if (selectedMode === "1v1") {
+            navigate(`/multiplayer/${charset}`);
+        } else if (selectedMode === "timed") {
             navigate(`/timed-quiz/${charset}`);
         } else {
             navigate(`/quiz/${charset}`);
@@ -37,6 +39,13 @@ export default function Home() {
                     >
                         <span className="mode-card-title">Timed</span>
                         <span className="mode-card-desc">Answer as many as you can in 60 seconds</span>
+                    </button>
+                    <button
+                        className={`mode-card ${selectedMode === "1v1" ? "mode-card-selected" : ""}`}
+                        onClick={() => setSelectedMode("1v1")}
+                    >
+                        <span className="mode-card-title">1v1</span>
+                        <span className="mode-card-desc">Compete against a friend in real-time</span>
                     </button>
                 </div>
             </div>
