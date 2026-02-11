@@ -9,9 +9,7 @@ export default function Home() {
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
     const handleCharset = (charset: string) => {
-        if (selectedMode === "1v1") {
-            navigate(`/multiplayer/${charset}`);
-        } else if (selectedMode === "timed") {
+        if (selectedMode === "timed") {
             navigate(`/timed-quiz/${charset}`);
         } else {
             navigate(`/quiz/${charset}`);
@@ -20,7 +18,7 @@ export default function Home() {
 
     return(
         <div className="home">
-            <h1>Japanese Quiz Game</h1>
+            <h1>Japanese Character Game</h1>
             <p className="subtitle">Test your knowledge of Japanese characters</p>
 
             <div className="mode-select">
@@ -41,8 +39,8 @@ export default function Home() {
                         <span className="mode-card-desc">Answer as many as you can in 60 seconds</span>
                     </button>
                     <button
-                        className={`mode-card ${selectedMode === "1v1" ? "mode-card-selected" : ""}`}
-                        onClick={() => setSelectedMode("1v1")}
+                        className="mode-card"
+                        onClick={() => navigate("/multiplayer")}
                     >
                         <span className="mode-card-title">1v1</span>
                         <span className="mode-card-desc">Compete against a friend in real-time</span>

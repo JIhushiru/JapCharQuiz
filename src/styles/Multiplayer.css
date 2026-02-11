@@ -89,6 +89,32 @@
     text-transform: uppercase;
 }
 
+.charset-pick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.charset-pick h3 {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.back-link {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    margin-top: 0.5rem;
+}
+
+.back-link:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .lobby-error {
     color: #f87171;
     font-size: 0.9rem;
@@ -238,6 +264,18 @@
 
     .room-code-label {
         color: rgba(0, 0, 0, 0.4);
+    }
+
+    .charset-pick h3 {
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .back-link {
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+    .back-link:hover {
+        color: rgba(0, 0, 0, 0.7);
     }
 
     .waiting-text {

@@ -13,7 +13,7 @@ function App() {
       <Route path = '/' element = {<Home/>}/>
       <Route path = '/quiz/:charset' element ={<UnliMode/>}/>
       <Route path = '/timed-quiz/:charset' element={<TimedMode/>}/>
-      <Route path = '/multiplayer/:charset' element={<MultiplayerLobby/>}/>
+      <Route path = '/multiplayer' element={<MultiplayerLobby/>}/>
       <Route path = '/multiplayer-game/:roomCode/:player' element={<MultiplayerGame/>}/>
     </Routes>
   );

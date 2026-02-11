@@ -1,29 +1,24 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createRoom, joinRoom, subscribeToRoom, type RoomData } from "../lib/roomService";
 import "../styles/Multiplayer.css";
 
-type LobbyPhase = "choice" | "creating" | "waiting" | "joining";
+type LobbyPhase = "choice" | "charset" | "creating" | "waiting" | "joining";
 
 export default function MultiplayerLobby() {
-    const { charset } = useParams<{ charset: string }>();
     const navigate = useNavigate();
-    const mode = charset || "hiragana";
 
     const [phase, setPhase] = useState<LobbyPhase>("choice");
     const [roomCode, setRoomCode] = useState("");
     const [joinCode, setJoinCode] = useState("");
     const [error, setError] = useState("");
 
-    const charsetLabel = mode === "both" ? "Hiragana & Katakana"
-        : mode === "katakana" ? "Katakana" : "Hiragana";
-
-    // Create a room
-    const handleCreate = async () => {
+    // Create a room with chosen charset
+    const handleCreate = async (charset: string) => {
         setPhase("creating");
         setError("");
         try {
-            const code = await createRoom(mode);
+            const code = await createRoom(charset);
             setRoomCode(code);
             setPhase("waiting");
         } catch {
@@ -63,16 +58,30 @@ export default function MultiplayerLobby() {
 
     return (
         <div className="lobby-container">
-            <h2>{charsetLabel} — 1v1</h2>
+            <h2>1v1 Mode</h2>
             <p className="lobby-subtitle">Play against a friend in real-time</p>
 
             {phase === "choice" && (
                 <div className="lobby-actions">
-                    <button className="lobby-btn lobby-btn-primary" onClick={handleCreate}>
+                    <button className="lobby-btn lobby-btn-primary" onClick={() => { setPhase("charset"); setError(""); }}>
                         Create Room
                     </button>
                     <button className="lobby-btn" onClick={() => { setPhase("joining"); setError(""); }}>
                         Join Room
+                    </button>
+                </div>
+            )}
+
+            {phase === "charset" && (
+                <div className="charset-pick">
+                    <h3>Choose a character set</h3>
+                    <div className="lobby-actions">
+                        <button className="lobby-btn" onClick={() => handleCreate("hiragana")}>Hiragana</button>
+                        <button className="lobby-btn" onClick={() => handleCreate("katakana")}>Katakana</button>
+                        <button className="lobby-btn" onClick={() => handleCreate("both")}>Both</button>
+                    </div>
+                    <button className="back-link" onClick={() => { setPhase("choice"); setError(""); }}>
+                        Back
                     </button>
                 </div>
             )}
