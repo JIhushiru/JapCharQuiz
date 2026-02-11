@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import hiraganaArray from "../dictionary/hiragana";
 import katakanaArray from "../dictionary/katakana";
-import "../styles/TimedMode.css";
 
 type Phase = "idle" | "playing" | "ended";
 
@@ -48,7 +47,6 @@ export default function TimedMode() {
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [isNewHighScore, setIsNewHighScore] = useState(false);
 
-    // Countdown timer
     useEffect(() => {
         if (phase !== "playing") return;
         const interval = setInterval(() => {
@@ -64,7 +62,6 @@ export default function TimedMode() {
         return () => clearInterval(interval);
     }, [phase]);
 
-    // Save high score and best streak on game end
     useEffect(() => {
         if (phase !== "ended") return;
         if (score > highScore) {
@@ -78,7 +75,6 @@ export default function TimedMode() {
         }
     }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Clear feedback flash
     useEffect(() => {
         if (isCorrect !== null) {
             const timer = setTimeout(() => {
@@ -122,7 +118,6 @@ export default function TimedMode() {
             setStreak(0);
         }
 
-        // Always advance to next character
         setUserGuess("");
         setCurrentKana(getRandomKana());
         inputRef.current?.focus();
@@ -135,93 +130,97 @@ export default function TimedMode() {
 
     if (phase === "idle") {
         return (
-            <div className="quiz-container timed-container">
+            <div className="flex flex-col items-center gap-3 w-full max-w-125">
                 <h2>{charsetLabel} — Timed Quiz</h2>
-                <p className="timed-description">
+                <p className="text-white/50 text-base max-w-87.5 leading-relaxed light:text-black/50">
                     Answer as many characters as you can in {GAME_DURATION} seconds.
                     Wrong answers auto-advance to the next character.
                 </p>
-                <button className="start-btn" onClick={startGame}>Start</button>
-                <div className="timed-records">
-                    {highScore > 0 && <p>High Score: {highScore}</p>}
-                    {bestStreak > 0 && <p>Best Streak: {bestStreak}</p>}
+                <button className="py-4 px-12 text-xl font-semibold bg-brand text-white my-4 hover:bg-brand-hover" onClick={startGame}>
+                    Start
+                </button>
+                <div className="text-white/40 text-sm light:text-black/40">
+                    {highScore > 0 && <p className="my-0.5">High Score: {highScore}</p>}
+                    {bestStreak > 0 && <p className="my-0.5">Best Streak: {bestStreak}</p>}
                 </div>
-                <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+                <button className="opacity-60 text-sm hover:opacity-100" onClick={() => navigate("/")}>Back to Menu</button>
             </div>
         );
     }
 
     if (phase === "ended") {
         return (
-            <div className="quiz-container timed-container">
+            <div className="flex flex-col items-center gap-3 w-full max-w-125">
                 <h2>Time's Up!</h2>
-                {isNewHighScore && <p className="new-highscore">New High Score!</p>}
-                <div className="game-over-stats">
-                    <div className="game-over-stat">
-                        <span className="stat-label">Score</span>
-                        <span className="stat-value">{score}</span>
+                {isNewHighScore && <p className="text-warning text-xl font-bold light:text-warning-light">New High Score!</p>}
+                <div className="grid grid-cols-2 gap-5 p-6 bg-white/5 rounded-xl w-full max-w-80 light:bg-black/4 max-sm:p-4 max-sm:gap-4">
+                    <div className="flex flex-col items-center">
+                        <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Score</span>
+                        <span className="text-xl font-semibold text-brand">{score}</span>
                     </div>
-                    <div className="game-over-stat">
-                        <span className="stat-label">Accuracy</span>
-                        <span className="stat-value">{accuracy}%</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Accuracy</span>
+                        <span className="text-xl font-semibold text-brand">{accuracy}%</span>
                     </div>
-                    <div className="game-over-stat">
-                        <span className="stat-label">Best Streak</span>
-                        <span className="stat-value">{maxStreak}</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Best Streak</span>
+                        <span className="text-xl font-semibold text-brand">{maxStreak}</span>
                     </div>
-                    <div className="game-over-stat">
-                        <span className="stat-label">Answered</span>
-                        <span className="stat-value">{totalAttempts}</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Answered</span>
+                        <span className="text-xl font-semibold text-brand">{totalAttempts}</span>
                     </div>
                 </div>
-                <div className="game-over-actions">
+                <div className="flex gap-4 mt-4 max-sm:flex-col max-sm:items-center">
                     <button onClick={startGame}>Play Again</button>
-                    <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+                    <button className="opacity-60 text-sm hover:opacity-100" onClick={() => navigate("/")}>Back to Menu</button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="quiz-container timed-container">
+        <div className="flex flex-col items-center gap-3 w-full max-w-125">
             <h2>{charsetLabel} — Timed Quiz</h2>
 
-            <div className={`timer-display ${timeLeft <= 10 ? "timer-warning" : ""}`}>
+            <div className={`text-4xl font-bold text-brand max-sm:text-3xl ${timeLeft <= 10 ? "animate-pulse-fast" : ""}`}>
                 {timeLeft}s
             </div>
 
-            <div className="stats">
-                <div className="stat-item">
-                    <span className="stat-label">Score</span>
-                    <span className="stat-value">{score}</span>
+            <div className="flex gap-6 flex-wrap justify-center py-4 px-6 bg-white/5 rounded-xl w-full light:bg-black/4 max-sm:gap-4 max-sm:py-3 max-sm:px-4">
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Score</span>
+                    <span className="text-xl font-semibold text-brand">{score}</span>
                 </div>
-                <div className="stat-item">
-                    <span className="stat-label">Streak</span>
-                    <span className="stat-value">{streak}</span>
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Streak</span>
+                    <span className="text-xl font-semibold text-brand">{streak}</span>
                 </div>
-                <div className="stat-item">
-                    <span className="stat-label">Accuracy</span>
-                    <span className="stat-value">{accuracy}%</span>
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Accuracy</span>
+                    <span className="text-xl font-semibold text-brand">{accuracy}%</span>
                 </div>
             </div>
 
-            <div className={`kana-display ${isCorrect === true ? "flash-correct" : isCorrect === false ? "flash-wrong" : ""}`}>
+            <div className={`text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
+                ${isCorrect === true ? "text-success light:text-success-light" : isCorrect === false ? "text-danger light:text-danger-light" : ""}`}>
                 {currentKana.kana}
             </div>
 
-            <div className="guess">
+            <div className="flex gap-2 flex-wrap justify-center max-sm:flex-col max-sm:items-center">
                 <input
                     ref={inputRef}
                     value={userGuess}
                     onChange={(e) => { setUserGuess(e.target.value); setMessage(""); setIsCorrect(null); }}
                     onKeyDown={(e) => e.key === "Enter" && handleCheck()}
                     placeholder="Type romaji..."
+                    className="w-45 text-center text-lg max-sm:w-full max-sm:max-w-62.5"
                     autoFocus
                 />
                 <button onClick={handleCheck}>Guess</button>
             </div>
 
-            {message && <p className={isCorrect ? "correct" : "wrong"}>{message}</p>}
+            {message && <p className={`font-semibold text-lg ${isCorrect ? "text-success light:text-success-light" : "text-danger light:text-danger-light"}`}>{message}</p>}
         </div>
     );
 }

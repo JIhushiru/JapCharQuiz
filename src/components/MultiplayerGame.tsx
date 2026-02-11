@@ -8,7 +8,6 @@ import {
     type RoomData,
     type PlayerData,
 } from "../lib/roomService";
-import "../styles/Multiplayer.css";
 
 const GAME_DURATION = 60;
 
@@ -30,21 +29,18 @@ export default function MultiplayerGame() {
     const [message, setMessage] = useState("");
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-    // Local state for my score (written to Firebase)
     const [myScore, setMyScore] = useState(0);
     const [myIndex, setMyIndex] = useState(0);
     const [myStreak, setMyStreak] = useState(0);
     const [myMaxStreak, setMyMaxStreak] = useState(0);
     const [myAttempts, setMyAttempts] = useState(0);
 
-    // Reconnect on mount
     useEffect(() => {
         if (code && me) {
             reconnectPlayer(code, me);
         }
     }, [code, me]);
 
-    // Subscribe to room
     useEffect(() => {
         if (!code) return;
 
@@ -63,7 +59,6 @@ export default function MultiplayerGame() {
         return unsub;
     }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Timer based on startTime
     useEffect(() => {
         if (phase !== "playing" || !room?.startTime) return;
 
@@ -82,7 +77,6 @@ export default function MultiplayerGame() {
         return () => clearInterval(interval);
     }, [phase, room?.startTime, code]);
 
-    // Clear feedback flash
     useEffect(() => {
         if (isCorrect !== null) {
             const timer = setTimeout(() => {
@@ -93,7 +87,6 @@ export default function MultiplayerGame() {
         }
     }, [isCorrect]);
 
-    // Sync local state to Firebase
     const syncToFirebase = useCallback(
         (score: number, index: number, streak: number, maxStreak: number, attempts: number) => {
             updatePlayerScore(code, me, {
@@ -144,7 +137,6 @@ export default function MultiplayerGame() {
     const myData: PlayerData | null = room ? room[me] : null;
     const opponentData: PlayerData | null = room ? room[opponent] : null;
 
-    // Use local state for my score display (faster), Firebase for opponent
     const myDisplayScore = myScore;
     const opponentScore = opponentData?.score ?? 0;
     const opponentStreak = opponentData?.streak ?? 0;
@@ -161,16 +153,14 @@ export default function MultiplayerGame() {
     const opAccuracy = opponentData && opponentData.totalAttempts > 0
         ? Math.round((opponentData.score / opponentData.totalAttempts) * 100) : 0;
 
-    // Loading
     if (phase === "loading") {
         return (
-            <div className="mp-game-container">
-                <p className="waiting-text">Connecting to game...</p>
+            <div className="flex flex-col items-center gap-3 w-full max-w-140">
+                <p className="text-white/50 animate-pulse-slow light:text-black/50">Connecting to game...</p>
             </div>
         );
     }
 
-    // Results
     if (phase === "ended") {
         const finalMyScore = myData?.score ?? myScore;
         const finalOpScore = opponentData?.score ?? 0;
@@ -180,25 +170,29 @@ export default function MultiplayerGame() {
         const resultText = result === "win" ? "You Win!"
             : result === "lose" ? "You Lose!" : "It's a Draw!";
 
-        return (
-            <div className="mp-results">
-                <h2>Time's Up!</h2>
-                <p className={`mp-result-banner mp-result-${result}`}>{resultText}</p>
+        const resultColor = result === "win" ? "text-success light:text-success-light"
+            : result === "lose" ? "text-danger light:text-danger-light"
+            : "text-warning light:text-warning-light";
 
-                <div className="mp-results-grid">
-                    <div className="mp-result-player">
-                        <h3>You</h3>
-                        <span className="mp-result-score">{finalMyScore}</span>
-                        <div className="mp-result-details">
+        return (
+            <div className="flex flex-col items-center gap-6 w-full max-w-125">
+                <h2>Time's Up!</h2>
+                <p className={`text-3xl font-bold ${resultColor}`}>{resultText}</p>
+
+                <div className="grid grid-cols-2 gap-6 w-full max-sm:grid-cols-1">
+                    <div className="flex flex-col items-center gap-3 p-6 bg-white/5 rounded-xl light:bg-black/4">
+                        <h3 className="m-0 text-sm text-white/60 uppercase tracking-wide light:text-black/60">You</h3>
+                        <span className="text-4xl font-bold text-brand">{finalMyScore}</span>
+                        <div className="flex flex-col items-center gap-0.5 text-sm text-white/40 light:text-black/40">
                             <span>Accuracy: {myAccuracy}%</span>
                             <span>Best Streak: {myData?.maxStreak ?? myMaxStreak}</span>
                             <span>Answered: {myData?.totalAttempts ?? myAttempts}</span>
                         </div>
                     </div>
-                    <div className="mp-result-player">
-                        <h3>Opponent</h3>
-                        <span className="mp-result-score">{finalOpScore}</span>
-                        <div className="mp-result-details">
+                    <div className="flex flex-col items-center gap-3 p-6 bg-white/5 rounded-xl light:bg-black/4">
+                        <h3 className="m-0 text-sm text-white/60 uppercase tracking-wide light:text-black/60">Opponent</h3>
+                        <span className="text-4xl font-bold text-brand">{finalOpScore}</span>
+                        <div className="flex flex-col items-center gap-0.5 text-sm text-white/40 light:text-black/40">
                             <span>Accuracy: {opAccuracy}%</span>
                             <span>Best Streak: {opponentData?.maxStreak ?? 0}</span>
                             <span>Answered: {opponentData?.totalAttempts ?? 0}</span>
@@ -206,57 +200,58 @@ export default function MultiplayerGame() {
                     </div>
                 </div>
 
-                <div className="mp-result-actions">
-                    <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+                <div className="flex gap-4 mt-2">
+                    <button className="opacity-60 text-sm hover:opacity-100" onClick={() => navigate("/")}>Back to Menu</button>
                 </div>
             </div>
         );
     }
 
-    // Playing
     return (
-        <div className="mp-game-container">
+        <div className="flex flex-col items-center gap-3 w-full max-w-140">
             <h2>{charsetLabel} — 1v1</h2>
 
-            <div className={`timer-display ${timeLeft <= 10 ? "timer-warning" : ""}`}>
+            <div className={`text-4xl font-bold text-brand max-sm:text-3xl ${timeLeft <= 10 ? "animate-pulse-fast" : ""}`}>
                 {timeLeft}s
             </div>
 
-            <div className="mp-scoreboard">
-                <div className="mp-player-card is-you">
-                    <span className="mp-player-label">You</span>
-                    <span className="mp-player-score">{myDisplayScore}</span>
-                    <span className="mp-player-streak">Streak: {myStreak}</span>
+            <div className="flex gap-6 w-full justify-center max-sm:gap-3">
+                <div className="flex-1 max-w-55 p-4 bg-white/5 rounded-xl flex flex-col items-center gap-1 border-2 border-brand/40 light:bg-black/4 max-sm:p-3">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">You</span>
+                    <span className="text-3xl font-bold text-brand max-sm:text-2xl">{myDisplayScore}</span>
+                    <span className="text-xs text-white/35 light:text-black/35">Streak: {myStreak}</span>
                 </div>
-                <div className="mp-player-card">
-                    <span className="mp-player-label">Opponent</span>
-                    <span className="mp-player-score">{opponentScore}</span>
-                    <span className="mp-player-streak">Streak: {opponentStreak}</span>
+                <div className="flex-1 max-w-55 p-4 bg-white/5 rounded-xl flex flex-col items-center gap-1 border-2 border-transparent light:bg-black/4 max-sm:p-3">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Opponent</span>
+                    <span className="text-3xl font-bold text-brand max-sm:text-2xl">{opponentScore}</span>
+                    <span className="text-xs text-white/35 light:text-black/35">Streak: {opponentStreak}</span>
                     {!opponentConnected && (
-                        <span className="mp-disconnected">Disconnected</span>
+                        <span className="text-xs text-danger font-semibold">Disconnected</span>
                     )}
                 </div>
             </div>
 
             {currentChar && (
-                <div className={`kana-display ${isCorrect === true ? "flash-correct" : isCorrect === false ? "flash-wrong" : ""}`}>
+                <div className={`text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
+                    ${isCorrect === true ? "text-success light:text-success-light" : isCorrect === false ? "text-danger light:text-danger-light" : ""}`}>
                     {currentChar.kana}
                 </div>
             )}
 
-            <div className="guess">
+            <div className="flex gap-2 flex-wrap justify-center max-sm:flex-col max-sm:items-center">
                 <input
                     ref={inputRef}
                     value={userGuess}
                     onChange={(e) => { setUserGuess(e.target.value); setMessage(""); setIsCorrect(null); }}
                     onKeyDown={(e) => e.key === "Enter" && handleCheck()}
                     placeholder="Type romaji..."
+                    className="w-45 text-center text-lg max-sm:w-full max-sm:max-w-62.5"
                     autoFocus
                 />
                 <button onClick={handleCheck}>Guess</button>
             </div>
 
-            {message && <p className={isCorrect ? "correct" : "wrong"}>{message}</p>}
+            {message && <p className={`font-semibold text-lg ${isCorrect ? "text-success light:text-success-light" : "text-danger light:text-danger-light"}`}>{message}</p>}
         </div>
     );
 }

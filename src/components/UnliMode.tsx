@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import hiraganaArray from "../dictionary/hiragana";
 import katakanaArray from "../dictionary/katakana";
-import "../styles/UnliMode.css";
 
 function getHighScore(charset: string): number {
     const saved = localStorage.getItem(`highscore-${charset}`);
@@ -129,37 +128,39 @@ export default function UnliMode() {
     const accuracy = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
 
     return (
-        <div className="quiz-container">
+        <div className="flex flex-col items-center gap-4 w-full max-w-125">
             <h2>{charsetLabel} Quiz</h2>
 
-            <div className="stats">
-                <div className="stat-item">
-                    <span className="stat-label">Score</span>
-                    <span className="stat-value">{score}</span>
-                    {highScore > 0 && <span className="stat-best">Best: {highScore}</span>}
+            <div className="flex gap-6 flex-wrap justify-center py-4 px-6 bg-white/5 rounded-xl w-full light:bg-black/4">
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Score</span>
+                    <span className="text-xl font-semibold text-brand">{score}</span>
+                    {highScore > 0 && <span className="text-[0.7rem] text-white/35 light:text-black/35">Best: {highScore}</span>}
                 </div>
-                <div className="stat-item">
-                    <span className="stat-label">Streak</span>
-                    <span className="stat-value">{streak}</span>
-                    {bestStreak > 0 && <span className="stat-best">Best: {bestStreak}</span>}
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Streak</span>
+                    <span className="text-xl font-semibold text-brand">{streak}</span>
+                    {bestStreak > 0 && <span className="text-[0.7rem] text-white/35 light:text-black/35">Best: {bestStreak}</span>}
                 </div>
-                <div className="stat-item">
-                    <span className="stat-label">Accuracy</span>
-                    <span className="stat-value">{accuracy}%</span>
+                <div className="flex flex-col items-center min-w-20">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Accuracy</span>
+                    <span className="text-xl font-semibold text-brand">{accuracy}%</span>
                 </div>
             </div>
 
-            <div className={`kana-display ${isCorrect === true ? "flash-correct" : isCorrect === false ? "flash-wrong" : ""}`}>
+            <div className={`text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
+                ${isCorrect === true ? "text-success light:text-success-light" : isCorrect === false ? "text-danger light:text-danger-light" : ""}`}>
                 {currentKana.kana}
             </div>
 
-            <div className="guess">
+            <div className="flex gap-2 flex-wrap justify-center max-sm:flex-col max-sm:items-center">
                 <input
                     ref={inputRef}
                     value={userGuess}
                     onChange={(e) => { setUserGuess(e.target.value); setMessage(""); setIsCorrect(null); }}
                     onKeyDown={(e) => e.key === "Enter" && handleCheck()}
                     placeholder="Type romaji..."
+                    className="w-45 text-center text-lg max-sm:w-full max-sm:max-w-62.5"
                     autoFocus
                 />
                 <button onClick={handleCheck}>Guess</button>
@@ -167,12 +168,12 @@ export default function UnliMode() {
                 <button onClick={skipKana}>Skip</button>
             </div>
 
-            {message && <p className={isCorrect ? "correct" : "wrong"}>{message}</p>}
-            {answer && <p className="answer-reveal">Answer: {answer}</p>}
+            {message && <p className={`font-semibold text-lg ${isCorrect ? "text-success light:text-success-light" : "text-danger light:text-danger-light"}`}>{message}</p>}
+            {answer && <p className="text-warning text-lg light:text-warning-light">Answer: {answer}</p>}
 
-            <div className="quiz-actions">
-                <button className="reset-btn" onClick={handleReset}>Reset Score</button>
-                <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+            <div className="flex gap-4 mt-6">
+                <button className="opacity-60 text-sm hover:opacity-100" onClick={handleReset}>Reset Score</button>
+                <button className="opacity-60 text-sm hover:opacity-100" onClick={() => navigate("/")}>Back to Menu</button>
             </div>
         </div>
     );

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createRoom, joinRoom, subscribeToRoom, type RoomData } from "../lib/roomService";
-import "../styles/Multiplayer.css";
 
 type LobbyPhase = "choice" | "charset" | "creating" | "waiting" | "joining";
 
@@ -13,7 +12,6 @@ export default function MultiplayerLobby() {
     const [joinCode, setJoinCode] = useState("");
     const [error, setError] = useState("");
 
-    // Create a room with chosen charset
     const handleCreate = async (charset: string) => {
         setPhase("creating");
         setError("");
@@ -27,7 +25,6 @@ export default function MultiplayerLobby() {
         }
     };
 
-    // Join a room
     const handleJoin = async () => {
         const code = joinCode.trim().toUpperCase();
         if (code.length !== 4) {
@@ -43,7 +40,6 @@ export default function MultiplayerLobby() {
         }
     };
 
-    // Subscribe to room when waiting for opponent
     useEffect(() => {
         if (phase !== "waiting" || !roomCode) return;
 
@@ -57,71 +53,75 @@ export default function MultiplayerLobby() {
     }, [phase, roomCode, navigate]);
 
     return (
-        <div className="lobby-container">
+        <div className="flex flex-col items-center gap-6 w-full max-w-125">
             <h2>1v1 Mode</h2>
-            <p className="lobby-subtitle">Play against a friend in real-time</p>
+            <p className="text-white/50 text-base light:text-black/50">Play against a friend in real-time</p>
 
             {phase === "choice" && (
-                <div className="lobby-actions">
-                    <button className="lobby-btn lobby-btn-primary" onClick={() => { setPhase("charset"); setError(""); }}>
+                <div className="flex gap-4 mt-2">
+                    <button className="py-4 px-10 text-lg min-w-40 bg-brand text-white hover:bg-brand-hover" onClick={() => { setPhase("charset"); setError(""); }}>
                         Create Room
                     </button>
-                    <button className="lobby-btn" onClick={() => { setPhase("joining"); setError(""); }}>
+                    <button className="py-4 px-10 text-lg min-w-40" onClick={() => { setPhase("joining"); setError(""); }}>
                         Join Room
                     </button>
                 </div>
             )}
 
             {phase === "charset" && (
-                <div className="charset-pick">
-                    <h3>Choose a character set</h3>
-                    <div className="lobby-actions">
-                        <button className="lobby-btn" onClick={() => handleCreate("hiragana")}>Hiragana</button>
-                        <button className="lobby-btn" onClick={() => handleCreate("katakana")}>Katakana</button>
-                        <button className="lobby-btn" onClick={() => handleCreate("both")}>Both</button>
+                <div className="flex flex-col items-center gap-4">
+                    <h3 className="m-0 text-white/60 light:text-black/60">Choose a character set</h3>
+                    <div className="flex gap-4 mt-2">
+                        <button className="py-4 px-10 text-lg min-w-40" onClick={() => handleCreate("hiragana")}>Hiragana</button>
+                        <button className="py-4 px-10 text-lg min-w-40" onClick={() => handleCreate("katakana")}>Katakana</button>
+                        <button className="py-4 px-10 text-lg min-w-40" onClick={() => handleCreate("both")}>Both</button>
                     </div>
-                    <button className="back-link" onClick={() => { setPhase("choice"); setError(""); }}>
+                    <button
+                        className="bg-transparent border-none text-white/40 cursor-pointer text-sm p-0 mt-2 hover:text-white/70 light:text-black/40 light:hover:text-black/70"
+                        onClick={() => { setPhase("choice"); setError(""); }}
+                    >
                         Back
                     </button>
                 </div>
             )}
 
             {phase === "creating" && (
-                <p className="waiting-text">Creating room...</p>
+                <p className="text-white/50 animate-pulse-slow light:text-black/50">Creating room...</p>
             )}
 
             {phase === "waiting" && (
-                <div className="room-code-display">
-                    <span className="room-code-label">Room Code</span>
-                    <span className="room-code">{roomCode}</span>
-                    <p className="waiting-text">Waiting for opponent...</p>
+                <div className="flex flex-col items-center gap-3 p-8 bg-white/5 rounded-xl w-full light:bg-black/4">
+                    <span className="text-xs uppercase tracking-wide text-white/40 light:text-black/40">Room Code</span>
+                    <span className="text-5xl font-bold tracking-[0.3em] text-brand font-mono">{roomCode}</span>
+                    <p className="text-white/50 animate-pulse-slow light:text-black/50">Waiting for opponent...</p>
                 </div>
             )}
 
             {phase === "joining" && (
-                <div className="join-form">
+                <div className="flex flex-col items-center gap-4 p-8 bg-white/5 rounded-xl w-full light:bg-black/4">
                     <input
                         value={joinCode}
                         onChange={(e) => { setJoinCode(e.target.value.toUpperCase()); setError(""); }}
                         onKeyDown={(e) => e.key === "Enter" && handleJoin()}
                         placeholder="CODE"
                         maxLength={4}
+                        className="w-45 text-center text-2xl font-mono tracking-[0.2em] uppercase"
                         autoFocus
                     />
-                    <div className="lobby-actions">
-                        <button className="lobby-btn lobby-btn-primary" onClick={handleJoin}>
+                    <div className="flex gap-4 mt-2">
+                        <button className="py-4 px-10 text-lg min-w-40 bg-brand text-white hover:bg-brand-hover" onClick={handleJoin}>
                             Join
                         </button>
-                        <button className="lobby-btn" onClick={() => { setPhase("choice"); setError(""); }}>
+                        <button className="py-4 px-10 text-lg min-w-40" onClick={() => { setPhase("choice"); setError(""); }}>
                             Back
                         </button>
                     </div>
                 </div>
             )}
 
-            {error && <p className="lobby-error">{error}</p>}
+            {error && <p className="text-danger text-sm">{error}</p>}
 
-            <button className="back-btn" onClick={() => navigate("/")}>Back to Menu</button>
+            <button className="opacity-60 text-sm hover:opacity-100" onClick={() => navigate("/")}>Back to Menu</button>
         </div>
     );
 }

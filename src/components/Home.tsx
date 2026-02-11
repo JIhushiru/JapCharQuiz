@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Home.css";
 
 type Mode = "normal" | "timed" | "1v1";
 
@@ -17,49 +16,63 @@ export default function Home() {
     };
 
     return(
-        <div className="home">
+        <div className="flex flex-col items-center gap-6">
             <h1>Japanese Character Game</h1>
-            <p className="subtitle">Test your knowledge of Japanese characters</p>
+            <p className="text-white/50 text-lg -mt-2 dark:text-white/50 max-sm:text-base
+                          light:text-black/50">
+                Test your knowledge of Japanese characters
+            </p>
 
-            <div className="mode-select">
-                <h2>Choose a game mode</h2>
-                <div className="mode-cards">
+            <div className="mt-8">
+                <h2 className="text-xl mb-6 text-white/70 light:text-black/60">Choose a game mode</h2>
+                <div className="flex gap-4 justify-center max-sm:flex-col">
                     <button
-                        className={`mode-card ${selectedMode === "normal" ? "mode-card-selected" : ""}`}
+                        className={`flex flex-col items-center gap-2 py-6 px-8 min-w-45 border-2 rounded-xl cursor-pointer transition-all duration-200
+                            ${selectedMode === "normal"
+                                ? "border-brand bg-brand/10"
+                                : "border-white/15 bg-white/3 hover:border-brand/50 hover:bg-white/6 light:border-black/12 light:bg-black/2 light:hover:border-brand/40 light:hover:bg-black/4"}
+                            max-sm:min-w-0 max-sm:w-full`}
                         onClick={() => setSelectedMode("normal")}
                     >
-                        <span className="mode-card-title">Normal</span>
-                        <span className="mode-card-desc">Practice at your own pace with unlimited time</span>
+                        <span className="text-lg font-semibold">Normal</span>
+                        <span className="text-xs text-white/40 max-w-40 leading-tight light:text-black/40">Practice at your own pace with unlimited time</span>
                     </button>
                     <button
-                        className={`mode-card ${selectedMode === "timed" ? "mode-card-selected" : ""}`}
+                        className={`flex flex-col items-center gap-2 py-6 px-8 min-w-45 border-2 rounded-xl cursor-pointer transition-all duration-200
+                            ${selectedMode === "timed"
+                                ? "border-brand bg-brand/10"
+                                : "border-white/15 bg-white/3 hover:border-brand/50 hover:bg-white/6 light:border-black/12 light:bg-black/2 light:hover:border-brand/40 light:hover:bg-black/4"}
+                            max-sm:min-w-0 max-sm:w-full`}
                         onClick={() => setSelectedMode("timed")}
                     >
-                        <span className="mode-card-title">Timed</span>
-                        <span className="mode-card-desc">Answer as many as you can in 60 seconds</span>
+                        <span className="text-lg font-semibold">Timed</span>
+                        <span className="text-xs text-white/40 max-w-40 leading-tight light:text-black/40">Answer as many as you can in 60 seconds</span>
                     </button>
                     <button
-                        className="mode-card"
+                        className="flex flex-col items-center gap-2 py-6 px-8 min-w-45 border-2 border-white/15 bg-white/3 rounded-xl cursor-pointer transition-all duration-200
+                            hover:border-brand/50 hover:bg-white/6
+                            light:border-black/12 light:bg-black/2 light:hover:border-brand/40 light:hover:bg-black/4
+                            max-sm:min-w-0 max-sm:w-full"
                         onClick={() => navigate("/multiplayer")}
                     >
-                        <span className="mode-card-title">1v1</span>
-                        <span className="mode-card-desc">Compete against a friend in real-time</span>
+                        <span className="text-lg font-semibold">1v1</span>
+                        <span className="text-xs text-white/40 max-w-40 leading-tight light:text-black/40">Compete against a friend in real-time</span>
                     </button>
                 </div>
             </div>
 
             {selectedMode && (
-                <div className="charset-select">
-                    <h2>Choose a character set</h2>
-                    <div className="mode-buttons">
-                        <button onClick={() => handleCharset("hiragana")}>Hiragana</button>
-                        <button onClick={() => handleCharset("katakana")}>Katakana</button>
-                        <button onClick={() => handleCharset("both")}>Both</button>
+                <div className="animate-fade-in">
+                    <h2 className="text-xl mb-6 text-white/70 light:text-black/60">Choose a character set</h2>
+                    <div className="flex gap-4 flex-wrap justify-center max-sm:flex-col">
+                        <button className="py-4 px-10 text-lg min-w-37.5 max-sm:w-full" onClick={() => handleCharset("hiragana")}>Hiragana</button>
+                        <button className="py-4 px-10 text-lg min-w-37.5 max-sm:w-full" onClick={() => handleCharset("katakana")}>Katakana</button>
+                        <button className="py-4 px-10 text-lg min-w-37.5 max-sm:w-full" onClick={() => handleCharset("both")}>Both</button>
                     </div>
                 </div>
             )}
 
-            <p className="footer-note">Type the romaji for each character shown</p>
+            <p className="mt-12 text-xs text-white/25 light:text-black/25">Type the romaji for each character shown</p>
         </div>
     );
 }
