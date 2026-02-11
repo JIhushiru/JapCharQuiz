@@ -86,6 +86,11 @@ export default function Home() {
 
             <p className="mt-4 text-xs text-white/25 light:text-black/25">Type the romaji for each character shown</p>
 
+            <a href="https://jhraportfolio.vercel.app/" target="_blank" rel="noopener noreferrer"
+               className="mt-6 text-xs text-white/20 hover:text-white/50 transition-colors light:text-black/20 light:hover:text-black/50">
+                Made by JHRA
+            </a>
+
             {showChart && <CharChart onClose={() => setShowChart(false)} />}
         </div>
     );
