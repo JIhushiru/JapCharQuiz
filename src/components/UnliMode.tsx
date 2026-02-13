@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
-import hiraganaArray from "../dictionary/hiragana";
-import katakanaArray from "../dictionary/katakana";
+import { getKanaPool, getCharsetLabel } from "../lib/kanaPool";
 
 function getHighScore(charset: string): number {
     const saved = localStorage.getItem(`highscore-${charset}`);
@@ -19,11 +18,7 @@ export default function UnliMode() {
     const inputRef = useRef<HTMLInputElement>(null);
     const mode = charset || "hiragana";
 
-    const kanaPool = useMemo(() => {
-        if (mode === "katakana") return katakanaArray;
-        if (mode === "both") return [...hiraganaArray, ...katakanaArray];
-        return hiraganaArray;
-    }, [mode]);
+    const kanaPool = useMemo(() => getKanaPool(mode), [mode]);
 
     const getRandomKana = () => {
         return kanaPool[Math.floor(Math.random() * kanaPool.length)];
@@ -122,9 +117,7 @@ export default function UnliMode() {
         inputRef.current?.focus();
     };
 
-    const charsetLabel = mode === "both" ? "Hiragana & Katakana"
-        : mode === "katakana" ? "Katakana" : "Hiragana";
-
+    const charsetLabel = getCharsetLabel(mode);
     const accuracy = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
 
     return (
@@ -148,7 +141,7 @@ export default function UnliMode() {
                 </div>
             </div>
 
-            <div className={`text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
+            <div className={`font-kana text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
                 ${isCorrect === true ? "text-success light:text-success-light" : isCorrect === false ? "text-danger light:text-danger-light" : ""}`}>
                 {currentKana.kana}
             </div>

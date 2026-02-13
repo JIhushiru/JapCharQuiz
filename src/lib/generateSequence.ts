@@ -1,10 +1,6 @@
-import hiraganaArray from "../dictionary/hiragana";
-import katakanaArray from "../dictionary/katakana";
+import { getKanaPool, type KanaChar } from "./kanaPool";
 
-export interface KanaChar {
-    kana: string;
-    romaji: string;
-}
+export type { KanaChar };
 
 function fisherYatesShuffle<T>(array: T[]): T[] {
     const shuffled = [...array];
@@ -16,10 +12,7 @@ function fisherYatesShuffle<T>(array: T[]): T[] {
 }
 
 export function generateSequence(charset: string, count = 120): KanaChar[] {
-    let pool: KanaChar[];
-    if (charset === "katakana") pool = katakanaArray;
-    else if (charset === "both") pool = [...hiraganaArray, ...katakanaArray];
-    else pool = hiraganaArray;
+    const pool = getKanaPool(charset);
 
     const sequence: KanaChar[] = [];
     while (sequence.length < count) {

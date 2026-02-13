@@ -3,20 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { createRoom, joinRoom, subscribeToRoom, type RoomData } from "../lib/roomService";
 
 type LobbyPhase = "choice" | "charset" | "creating" | "waiting" | "joining";
+type Scope = "basic" | "all";
 
 export default function MultiplayerLobby() {
     const navigate = useNavigate();
 
     const [phase, setPhase] = useState<LobbyPhase>("choice");
+    const [scope, setScope] = useState<Scope>("all");
     const [roomCode, setRoomCode] = useState("");
     const [joinCode, setJoinCode] = useState("");
     const [error, setError] = useState("");
 
     const handleCreate = async (charset: string) => {
+        const fullCharset = scope === "basic" ? `${charset}-basic` : charset;
         setPhase("creating");
         setError("");
         try {
-            const code = await createRoom(charset);
+            const code = await createRoom(fullCharset);
             setRoomCode(code);
             setPhase("waiting");
         } catch {
@@ -70,6 +73,27 @@ export default function MultiplayerLobby() {
 
             {phase === "charset" && (
                 <div className="flex flex-col items-center gap-4">
+                    <h3 className="m-0 text-white/60 light:text-black/60">Character scope</h3>
+                    <div className="flex gap-2 justify-center">
+                        <button
+                            className={`text-sm px-5 py-2 rounded-full transition-all duration-200
+                                ${scope === "basic"
+                                    ? "bg-brand text-white border-brand"
+                                    : "border-white/20 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 light:border-black/15 light:bg-black/3 light:text-black/50 light:hover:bg-black/6 light:hover:text-black/70"}`}
+                            onClick={() => setScope("basic")}
+                        >
+                            Basic
+                        </button>
+                        <button
+                            className={`text-sm px-5 py-2 rounded-full transition-all duration-200
+                                ${scope === "all"
+                                    ? "bg-brand text-white border-brand"
+                                    : "border-white/20 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 light:border-black/15 light:bg-black/3 light:text-black/50 light:hover:bg-black/6 light:hover:text-black/70"}`}
+                            onClick={() => setScope("all")}
+                        >
+                            All Characters
+                        </button>
+                    </div>
                     <h3 className="m-0 text-white/60 light:text-black/60">Choose a character set</h3>
                     <div className="flex gap-4 mt-2">
                         <button className="py-4 px-10 text-lg min-w-40" onClick={() => handleCreate("hiragana")}>Hiragana</button>

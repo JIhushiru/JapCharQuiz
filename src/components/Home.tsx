@@ -3,17 +3,20 @@ import { useNavigate } from "react-router-dom";
 import CharChart from "./CharChart";
 
 type Mode = "normal" | "timed" | "1v1";
+type Scope = "basic" | "all";
 
 export default function Home() {
     const navigate = useNavigate();
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
+    const [scope, setScope] = useState<Scope>("all");
     const [showChart, setShowChart] = useState(false);
 
     const handleCharset = (charset: string) => {
+        const fullCharset = scope === "basic" ? `${charset}-basic` : charset;
         if (selectedMode === "timed") {
-            navigate(`/timed-quiz/${charset}`);
+            navigate(`/timed-quiz/${fullCharset}`);
         } else {
-            navigate(`/quiz/${charset}`);
+            navigate(`/quiz/${fullCharset}`);
         }
     };
 
@@ -65,6 +68,33 @@ export default function Home() {
 
             {selectedMode && (
                 <div className="animate-fade-in">
+                    <h2 className="text-xl mb-4 text-white/70 light:text-black/60">Character scope</h2>
+                    <div className="flex gap-2 justify-center mb-6">
+                        <button
+                            className={`text-sm px-5 py-2 rounded-full transition-all duration-200
+                                ${scope === "basic"
+                                    ? "bg-brand text-white border-brand"
+                                    : "border-white/20 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 light:border-black/15 light:bg-black/3 light:text-black/50 light:hover:bg-black/6 light:hover:text-black/70"}`}
+                            onClick={() => setScope("basic")}
+                        >
+                            Basic
+                        </button>
+                        <button
+                            className={`text-sm px-5 py-2 rounded-full transition-all duration-200
+                                ${scope === "all"
+                                    ? "bg-brand text-white border-brand"
+                                    : "border-white/20 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 light:border-black/15 light:bg-black/3 light:text-black/50 light:hover:bg-black/6 light:hover:text-black/70"}`}
+                            onClick={() => setScope("all")}
+                        >
+                            All Characters
+                        </button>
+                    </div>
+                    <p className="text-xs text-white/35 mb-5 light:text-black/30">
+                        {scope === "basic"
+                            ? "46 basic characters only — no dakuten or combinations"
+                            : "All characters including dakuten and combinations"}
+                    </p>
+
                     <h2 className="text-xl mb-6 text-white/70 light:text-black/60">Choose a character set</h2>
                     <div className="flex gap-4 flex-wrap justify-center max-sm:flex-col">
                         <button className="py-4 px-10 text-lg min-w-37.5 max-sm:w-full" onClick={() => handleCharset("hiragana")}>Hiragana</button>

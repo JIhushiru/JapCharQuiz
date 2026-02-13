@@ -8,6 +8,7 @@ import {
     type RoomData,
     type PlayerData,
 } from "../lib/roomService";
+import { getCharsetLabel } from "../lib/kanaPool";
 
 const GAME_DURATION = 60;
 
@@ -144,10 +145,7 @@ export default function MultiplayerGame() {
 
     const currentChar = room?.characters?.[myIndex];
 
-    const charsetLabel = room
-        ? room.charset === "both" ? "Hiragana & Katakana"
-            : room.charset === "katakana" ? "Katakana" : "Hiragana"
-        : "";
+    const charsetLabel = room ? getCharsetLabel(room.charset) : "";
 
     const myAccuracy = myAttempts > 0 ? Math.round((myScore / myAttempts) * 100) : 0;
     const opAccuracy = opponentData && opponentData.totalAttempts > 0
@@ -232,7 +230,7 @@ export default function MultiplayerGame() {
             </div>
 
             {currentChar && (
-                <div className={`text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
+                <div className={`font-kana text-8xl leading-tight my-4 select-none transition-colors duration-200 max-sm:text-6xl
                     ${isCorrect === true ? "text-success light:text-success-light" : isCorrect === false ? "text-danger light:text-danger-light" : ""}`}>
                     {currentChar.kana}
                 </div>

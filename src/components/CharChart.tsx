@@ -54,7 +54,7 @@ function Cell({ romaji, lookup }: { romaji: string | null; lookup: Map<string, s
   return (
     <div className="w-16 h-16 max-sm:w-12 max-sm:h-12 flex flex-col items-center justify-center rounded-lg
                     bg-white/5 border border-white/10 light:bg-black/3 light:border-black/8">
-      <span className="text-xl max-sm:text-lg leading-none">{kana}</span>
+      <span className="font-kana text-xl max-sm:text-lg leading-none">{kana}</span>
       <span className="text-[10px] text-white/40 light:text-black/40 mt-0.5">{romaji}</span>
     </div>
   );

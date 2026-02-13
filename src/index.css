@@ -16,7 +16,7 @@
 
 @layer base {
   :root {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
     font-weight: 400;
     color-scheme: light dark;
@@ -159,4 +159,8 @@
 
 @utility animate-pulse-fast {
   animation: pulse 1s ease-in-out infinite;
+}
+
+@utility font-kana {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', sans-serif;
 }
